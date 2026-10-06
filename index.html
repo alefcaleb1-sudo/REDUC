@@ -1,0 +1,587 @@
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Phosphor Icons -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    reduc: {
+                        dark: '#1862B7',
+                        blue: '#2675D1',
+                        white: '#FEFEFE',
+                        yellow: '#FFFE57',
+                        darkYellow: '#F7ED4A',
+                    }
+                },
+                fontFamily: {
+                    sans: ['Inter', 'sans-serif'],
+                    heading: ['Poppins', 'sans-serif'],
+                },
+                animation: {
+                    'fade-in': 'fadeIn 0.4s ease-out forwards',
+                    'slide-up': 'slideUp 0.5s ease-out forwards',
+                },
+                keyframes: {
+                    fadeIn: {
+                        '0%': { opacity: '0' },
+                        '100%': { opacity: '1' },
+                    },
+                    slideUp: {
+                        '0%': { opacity: '0', transform: 'translateY(20px)' },
+                        '100%': { opacity: '1', transform: 'translateY(0)' },
+                    }
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    body { background-color: #f8fafc; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.4s ease-out; }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #2675D1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #1862B7; }
+
+    .glow-effect {
+        filter: drop-shadow(0 0 12px rgba(255, 254, 87, 0.4));
+    }
+    
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px -10px rgba(38, 117, 209, 0.2);
+    }
+</style>
+
+
+<!-- TELA DE LOGIN -->
+<div id="login-screen" class="min-h-screen flex items-center justify-center bg-slate-900 p-4 absolute inset-0 z-[100]">
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-md w-full p-8 text-center animate-fade-in border-t-8 border-reduc-yellow">
+        <div class="flex justify-center mb-6">
+            <!-- Logotipo -->
+            <div class="bg-reduc-dark rounded-full p-3 border-2 border-reduc-yellow glow-effect">
+                <img src="logo.png" alt="Reduc Logo" class="h-12 w-auto object-contain" onerror="this.src='https://placehold.co/100x100/1862B7/FFFE57?text=Reduc&font=Montserrat'">
+            </div>
+        </div>
+        <h2 class="text-2xl font-heading font-bold text-reduc-dark mb-2">Bem-vindo à Reduc!</h2>
+        <p class="text-slate-500 mb-8 text-sm">Faça login para acessar o guia definitivo da redação ENEM.</p>
+
+        <!-- Formulário de Login -->
+        <form id="login-form" onsubmit="entrarNaPlataforma(event)" class="space-y-4">
+            <div>
+                <input type="email" id="email" required placeholder="Seu e-mail" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-reduc-blue focus:ring-2 focus:ring-reduc-blue/20 transition-all text-slate-700">
+            </div>
+            <div>
+                <input type="password" id="senha" required placeholder="Sua senha" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-reduc-blue focus:ring-2 focus:ring-reduc-blue/20 transition-all text-slate-700">
+            </div>
+            <button type="submit" class="w-full bg-reduc-dark hover:bg-reduc-blue text-white font-heading font-bold py-3 px-4 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                Entrar na Plataforma
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- CONTEÚDO PRINCIPAL DA PLATAFORMA (Oculto inicialmente) -->
+<div id="conteudo-principal" style="display: none;">
+    
+    <header class="sticky top-0 z-50 bg-reduc-dark shadow-lg border-b-4 border-reduc-yellow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-center items-center h-20">
+                <!-- Centered Logo with Glow and Border -->
+                <div class="relative bg-white rounded-full p-2 border-2 border-reduc-yellow glow-effect transform transition hover:scale-105">
+                    <img src="logo.png" alt="Reduc Logo" class="h-10 w-auto object-contain rounded-full" onerror="this.src='https://placehold.co/100x100/1862B7/FFFE57?text=Reduc&font=Montserrat'">
+                </div>
+            </div>
+            
+            <nav class="flex overflow-x-auto py-2 hide-scroll-bar justify-start md:justify-center gap-2 pb-3">
+                <button onclick="switchTab('apresentacao')" id="tab-apresentacao" class="tab-btn active whitespace-nowrap px-5 py-2.5 rounded-full font-heading font-semibold text-sm transition-all duration-300 bg-reduc-yellow text-reduc-dark shadow-md">
+                    <i class="ph ph-hand-waving mr-1 text-lg align-text-bottom"></i> Apresentação
+                </button>
+                <button onclick="switchTab('estrutura')" id="tab-estrutura" class="tab-btn whitespace-nowrap px-5 py-2.5 rounded-full font-heading font-semibold text-sm transition-all duration-300 bg-reduc-blue/20 text-white hover:bg-reduc-blue/40">
+                    <i class="ph ph-bricks mr-1 text-lg align-text-bottom"></i> A Estrutura
+                </button>
+                <button onclick="switchTab('argumentos')" id="tab-argumentos" class="tab-btn whitespace-nowrap px-5 py-2.5 rounded-full font-heading font-semibold text-sm transition-all duration-300 bg-reduc-blue/20 text-white hover:bg-reduc-blue/40">
+                    <i class="ph ph-brain mr-1 text-lg align-text-bottom"></i> Tipos de Argumentos
+                </button>
+                <button onclick="switchTab('conectivos')" id="tab-conectivos" class="tab-btn whitespace-nowrap px-5 py-2.5 rounded-full font-heading font-semibold text-sm transition-all duration-300 bg-reduc-blue/20 text-white hover:bg-reduc-blue/40">
+                    <i class="ph ph-link mr-1 text-lg align-text-bottom"></i> Conectivos
+                </button>
+                <button onclick="switchTab('dicas')" id="tab-dicas" class="tab-btn whitespace-nowrap px-5 py-2.5 rounded-full font-heading font-semibold text-sm transition-all duration-300 bg-reduc-blue/20 text-white hover:bg-reduc-blue/40">
+                    <i class="ph ph-lightbulb mr-1 text-lg align-text-bottom"></i> Dicas para a Prova
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 min-h-screen">
+
+        <section id="apresentacao" class="tab-content active animate-fade-in">
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 flex flex-col md:flex-row">
+                <div class="bg-gradient-to-br from-reduc-dark to-reduc-blue md:w-2/5 p-10 flex flex-col justify-center items-center text-center text-white relative">
+                    <div class="absolute top-0 right-0 p-4 opacity-20">
+                        <i class="ph-fill ph-quotes text-6xl text-reduc-yellow"></i>
+                    </div>
+                    <img src="https://placehold.co/200x200/FFFE57/1862B7?text=P%C3%A2mela" alt="Pâmela" class="w-40 h-40 rounded-full border-4 border-reduc-yellow shadow-xl mb-6 object-cover">
+                    <h1 class="text-4xl font-heading font-bold text-reduc-yellow mb-2">Olá, estudante!</h1>
+                    <p class="text-xl font-light">Eu sou a Pâmela, e criei a Reduc para você.</p>
+                </div>
+                <div class="md:w-3/5 p-10 md:p-14 flex flex-col justify-center">
+                    <h2 class="text-3xl font-heading font-bold text-reduc-dark mb-6">Sua jornada para a Nota 1000 começa aqui.</h2>
+                    <div class="space-y-4 text-slate-600 text-lg leading-relaxed">
+                        <p>O Exame Nacional do Ensino Médio (ENEM) assusta muitos alunos, especialmente quando o assunto é o texto dissertativo-argumentativo. Mas estou aqui para te provar que escrever uma redação excelente não depende de genialidade, e sim de <strong>método, estrutura e repertório</strong>.</p>
+                        <p>Nesta plataforma inteiramente gratuita, compilei os padrões exatos que os avaliadores procuram. O ENEM funciona como uma engrenagem matemática: se você encaixar as peças certas nos lugares certos, a nota máxima deixa de ser um sonho e passa a ser uma consequência lógica.</p>
+                        <p>Navegue pelas abas acima. Domine cada parágrafo na aba <em>Estrutura</em>, aprenda a defender suas ideias com os <em>Tipos de Argumentos</em>, amarre seu texto com nossa tabela de <em>Conectivos</em> e vá tranquilo para o exame com as minhas <em>Dicas</em>.</p>
+                        <div class="mt-6 inline-block bg-reduc-white border-l-4 border-reduc-yellow p-4 rounded-r-lg shadow-sm">
+                            <p class="text-reduc-dark font-semibold italic">"A redação não é sobre saber tudo sobre um tema, mas sobre saber organizar o pouco que se sabe de forma irrefutável."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="estrutura" class="tab-content">
+            <div class="text-center mb-10 animate-slide-up">
+                <h1 class="text-4xl font-heading font-bold text-reduc-dark">A Anatomia da Nota 1000</h1>
+                <p class="text-slate-500 mt-3 text-lg">O modelo clássico de 4 parágrafos dissecado para você.</p>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Introdução -->
+                <div class="bg-white rounded-2xl shadow-lg border-l-8 border-reduc-dark p-8 card-hover">
+                    <div class="flex items-center gap-4 mb-6 border-b border-slate-100 pb-4">
+                        <div class="bg-reduc-dark text-white w-12 h-12 rounded-xl flex items-center justify-center text-2xl font-bold font-heading">1</div>
+                        <h2 class="text-3xl font-heading font-bold text-slate-800">Introdução <span class="text-slate-400 text-lg font-normal block sm:inline">(1º Parágrafo - 5 a 7 linhas)</span></h2>
+                    </div>
+                    <p class="text-slate-600 mb-6">A introdução é seu cartão de visitas. Ela não deve resolver o problema, apenas apresentá-lo e guiar o leitor sobre o que será discutido no texto. Ela possui 3 elementos obrigatórios:</p>
+                    
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
+                            <h3 class="font-heading font-semibold text-reduc-blue mb-2 flex items-center gap-2"><i class="ph-fill ph-book-open"></i> 1. Contexto (Repertório)</h3>
+                            <p class="text-sm text-slate-600">Um filme, livro, fato histórico ou citação que tenha relação com o tema. Serve para atrair o leitor e mostrar bagagem cultural.</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
+                            <h3 class="font-heading font-semibold text-reduc-blue mb-2 flex items-center gap-2"><i class="ph-fill ph-target"></i> 2. Apresentação do Tema</h3>
+                            <p class="text-sm text-slate-600">A ponte (conectivo) entre o seu contexto e a realidade brasileira atual, utilizando as palavras-chave da frase-tema da prova.</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-5 border-2 border-reduc-darkYellow bg-reduc-yellow/10">
+                            <h3 class="font-heading font-bold text-reduc-dark mb-2 flex items-center gap-2"><i class="ph-fill ph-flag-banner"></i> 3. Tese (Projeto de Texto)</h3>
+                            <p class="text-sm text-slate-800">O seu posicionamento. É obrigatório apontar os <strong>dois argumentos (A e B)</strong> que você desenvolverá nos próximos parágrafos.</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 bg-slate-900 text-emerald-400 font-mono text-sm p-4 rounded-xl shadow-inner">
+                        <span class="text-slate-400">// Fórmula da Introdução de Sucesso:</span><br>
+                        [Repertório Sociocultural] + [Conectivo de Transição] + [Apresentação do Tema e Problema] + [Conectivo de Conclusão] + [Tese focada em Argumento 1 e Argumento 2].
+                    </div>
+                </div>
+
+                <!-- Desenvolvimento -->
+                <div class="bg-white rounded-2xl shadow-lg border-l-8 border-reduc-blue p-8 card-hover">
+                    <div class="flex items-center gap-4 mb-6 border-b border-slate-100 pb-4">
+                        <div class="bg-reduc-blue text-white w-12 h-12 rounded-xl flex items-center justify-center text-2xl font-bold font-heading">2</div>
+                        <h2 class="text-3xl font-heading font-bold text-slate-800">Desenvolvimento 1 e 2 <span class="text-slate-400 text-lg font-normal block sm:inline">(2º e 3º Parágrafos - 7 a 9 linhas cada)</span></h2>
+                    </div>
+                    <p class="text-slate-600 mb-6">Aqui você prova que sua Tese está correta. O D1 foca no Argumento A e o D2 no Argumento B. A estrutura de ambos deve ser idêntica, mudando apenas os conectivos iniciais e o conteúdo.</p>
+                    
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                            <h3 class="font-heading text-sm font-semibold text-reduc-dark mb-2">1. Tópico Frasal (1 período)</h3>
+                            <p class="text-xs text-slate-600">Uma frase curta e direta afirmando o seu argumento. Ex: "Em primeiro lugar, cabe destacar a negligência governamental como impulsionadora do problema."</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                            <h3 class="font-heading text-sm font-semibold text-reduc-dark mb-2">2. Repertório Legitimo (1-2 períodos)</h3>
+                            <p class="text-xs text-slate-600">Prove o que disse no tópico frasal usando um dado, filósofo, sociólogo, lei, etc. Ex: "Segundo Thomas Hobbes..."</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                            <h3 class="font-heading text-sm font-bold text-reduc-dark mb-2">3. Argumentação (2 períodos)</h3>
+                            <p class="text-xs text-slate-600">A parte MAIS importante (onde está sua autoria). Relacione o repertório com o problema no Brasil e mostre as consequências (por que isso é ruim?).</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                            <h3 class="font-heading text-sm font-semibold text-reduc-dark mb-2">4. Fechamento (1 período)</h3>
+                            <p class="text-xs text-slate-600">Uma frase micro-conclusiva para encerrar a ideia do parágrafo. Ex: "Logo, urge reverter esse quadro de inércia."</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conclusão -->
+                <div class="bg-white rounded-2xl shadow-lg border-l-8 border-reduc-darkYellow p-8 card-hover">
+                    <div class="flex items-center gap-4 mb-6 border-b border-slate-100 pb-4">
+                        <div class="bg-reduc-darkYellow text-reduc-dark w-12 h-12 rounded-xl flex items-center justify-center text-2xl font-bold font-heading">3</div>
+                        <h2 class="text-3xl font-heading font-bold text-slate-800">Conclusão <span class="text-slate-400 text-lg font-normal block sm:inline">(4º Parágrafo - 6 a 8 linhas)</span></h2>
+                    </div>
+                    <p class="text-slate-600 mb-6">Exclusividade do ENEM: a <strong>Proposta de Intervenção</strong>. Você deve resolver os problemas levantados nos desenvolvimentos através de uma ação prática e detalhada contendo exatamente 5 elementos (que valem 200 pontos na Competência 5).</p>
+                    
+                    <div class="flex flex-wrap gap-3 mb-6">
+                        <span class="px-4 py-2 bg-reduc-dark/10 text-reduc-dark font-semibold rounded-lg">1. Agente (Quem?)</span>
+                        <span class="px-4 py-2 bg-reduc-blue/10 text-reduc-blue font-semibold rounded-lg">2. Ação (O que fará?)</span>
+                        <span class="px-4 py-2 bg-purple-100 text-purple-700 font-semibold rounded-lg">3. Meio/Modo (Como?)</span>
+                        <span class="px-4 py-2 bg-emerald-100 text-emerald-700 font-semibold rounded-lg">4. Efeito (Para quê?)</span>
+                        <span class="px-4 py-2 bg-reduc-yellow/40 text-reduc-dark font-semibold border border-reduc-yellow rounded-lg flex items-center"><i class="ph-fill ph-star mr-1"></i> 5. Detalhamento</span>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-6">
+                        <h3 class="font-heading font-bold text-reduc-dark mb-4 text-lg">Exemplo de Estrutura:</h3>
+                        <p class="text-slate-700 leading-relaxed">
+                            "Portanto, medidas são necessárias para mitigar esse revés. Para isso, o <strong class="text-reduc-dark">Ministério da Educação (Agente)</strong>, 
+                            <span class="underline decoration-reduc-yellow decoration-2">órgão responsável pela formação cidadã (Detalhamento do Agente)</span>, 
+                            deve <strong class="text-reduc-blue">promover campanhas informativas nas escolas (Ação)</strong>. 
+                            Isso deve ocorrer <strong class="text-purple-700">por meio de verbas governamentais direcionadas a palestras com especialistas (Meio/Modo)</strong>, 
+                            <strong class="text-emerald-700">a fim de conscientizar os jovens e erradicar o problema debatido (Efeito)</strong>. 
+                            Assim, o Brasil será uma nação mais justa, superando a realidade retratada na introdução (Fechamento/Retomada do repertório)."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="argumentos" class="tab-content">
+            <div class="text-center mb-10 animate-slide-up">
+                <h1 class="text-4xl font-heading font-bold text-reduc-dark">9 Tipos de Argumentos Infindáveis</h1>
+                <p class="text-slate-500 mt-3 text-lg">Selecione o raciocínio que melhor se adapta ao tema e ao seu repertório.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Arg 1 -->
+                <div class="bg-white rounded-xl shadow-md border-t-4 border-reduc-blue p-6 card-hover">
+                    <div class="w-10 h-10 rounded-full bg-reduc-blue/10 flex items-center justify-center text-reduc-blue mb-4">
+                        <i class="ph-fill ph-bank text-xl"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg mb-2 text-slate-800">1. Argumento de Autoridade</h3>
+                    <p class="text-sm text-slate-600 mb-4">Uso de citações de especialistas, filósofos, sociólogos ou instituições renomadas para validar sua tese.</p>
+                    <div class="bg-slate-50 p-3 rounded text-xs text-slate-700 border-l-2 border-reduc-yellow">
+                        <strong>Exemplo:</strong> "Conforme Zygmunt Bauman, em sua teoria da 'Modernidade Líquida', as relações e instituições tornaram-se fluidas, o que explica a efemeridade no engajamento político dos jovens atuais."
+                    </div>
+                </div>
+
+                <!-- Arg 2 -->
+                <div class="bg-white rounded-xl shadow-md border-t-4 border-reduc-blue p-6 card-hover">
+                    <div class="w-10 h-10 rounded-full bg-reduc-blue/10 flex items-center justify-center text-reduc-blue mb-4">
+                        <i class="ph-fill ph-chart-bar text-xl"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg mb-2 text-slate-800">2. Provas Concretas (Dados)</h3>
+                    <p class="text-sm text-slate-600 mb-4">Baseia-se em dados estatísticos, pesquisas do IBGE, IPEA ou fatos notórios. Confere extrema credibilidade material.</p>
+                    <div class="bg-slate-50 p-3 rounded text-xs text-slate-700 border-l-2 border-reduc-yellow">
+                        <strong>Exemplo:</strong> "Segundo dados do IBGE, mais de 30 milhões de brasileiros não possuem acesso à internet, escancarando a ilusão de uma democratização digital no país."
+                    </div>
+                </div>
+
+                <!-- Arg 3 -->
+                <div class="bg-white rounded-xl shadow-md border-t-4 border-reduc-blue p-6 card-hover">
+                    <div class="w-10 h-10 rounded-full bg-reduc-blue/10 flex items-center justify-center text-reduc-blue mb-4">
+                        <i class="ph-fill ph-arrows-split text-xl"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg mb-2 text-slate-800">3. Causa e Consequência</h3>
+                    <p class="text-sm text-slate-600 mb-4">Apontar os motivos que geraram o problema (causa) e os danos que ele provoca na sociedade (consequência). Muito usado no ENEM.</p>
+                    <div class="bg-slate-50 p-3 rounded text-xs text-slate-700 border-l-2 border-reduc-yellow">
+                        <strong>Exemplo:</strong> "A negligência estatal em investir em saneamento básico (causa) resulta na proliferação sistemática de doenças epidêmicas nas periferias (consequência)."
+                    </div>
+                </div>
+
+                <!-- Arg 4 -->
+                <div class="bg-white rounded-xl shadow-md border-t-4 border-reduc-blue p-6 card-hover">
+                    <div class="w-10 h-10 rounded-full bg-reduc-blue/10 flex items-center justify-center text-reduc-blue mb-4">
+                        <i class="ph-fill ph-hourglass-high text-xl"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg mb-2 text-slate-800">4. Alusão Histórica</h3>
+                    <p class="text-sm text-slate-600 mb-4">Comparar o presente com um evento passado, mostrando que o problema tem raízes históricas ou que não evoluímos.</p>
+                    <div class="bg-slate-50 p-3 rounded text-xs text-slate-700 border-l-2 border-reduc-yellow">
+                        <strong>Exemplo:</strong> "Desde o Brasil Colônia, com a escravidão, o trabalho braçal é marginalizado. Hoje, essa herança reflete-se na desvalorização dos profissionais de limpeza urbana."
+                    </div>
+                </div>
+
+                <!-- Arg 5 -->
+                <div class="bg-white rounded-xl shadow-md border-t-4 border-reduc-blue p-6 card-hover">
+                    <div class="w-10 h-10 rounded-full bg-reduc-blue/10 flex items-center justify-center text-reduc-blue mb-4">
+                        <i class="ph-fill ph-list-magnifying-glass text-xl"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg mb-2 text-slate-800">5. Exemplificação</h3>
+                    <p class="text-sm text-slate-600 mb-4">Citar exemplos reais, eventos recentes noticiados ou situações amplamente conhecidas para ilustrar a tese.</p>
+                    <div class="bg-slate-50 p-3 rounded text-xs text-slate-700 border-l-2 border-reduc-yellow">
+                        <strong>Exemplo:</strong> "Isso fica evidente em tragédias recentes, como o rompimento das barragens em Mariana e Brumadinho, que materializam o descaso corporativo com o meio ambiente."
+                    </div>
+                </div>
+
+                <!-- Arg 6 -->
+                <div class="bg-white rounded-xl shadow-md border-t-4 border-reduc-blue p-6 card-hover">
+                    <div class="w-10 h-10 rounded-full bg-reduc-blue/10 flex items-center justify-center text-reduc-blue mb-4">
+                        <i class="ph-fill ph-scales text-xl"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg mb-2 text-slate-800">6. Contraste (Oposição)</h3>
+                    <p class="text-sm text-slate-600 mb-4">Mostrar dois lados de uma situação, geralmente opondo o que diz a Lei (Constituição) e o que acontece na realidade.</p>
+                    <div class="bg-slate-50 p-3 rounded text-xs text-slate-700 border-l-2 border-reduc-yellow">
+                        <strong>Exemplo:</strong> "Embora a Constituição de 1988 garanta a saúde como direito de todos, na prática, as imensas filas no SUS revelam um abismo entre o texto legal e a realidade."
+                    </div>
+                </div>
+
+                <!-- Arg 7 -->
+                <div class="bg-white rounded-xl shadow-md border-t-4 border-reduc-blue p-6 card-hover">
+                    <div class="w-10 h-10 rounded-full bg-reduc-blue/10 flex items-center justify-center text-reduc-blue mb-4">
+                        <i class="ph-fill ph-brain text-xl"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg mb-2 text-slate-800">7. Raciocínio Lógico</h3>
+                    <p class="text-sm text-slate-600 mb-4">Estabelecer conexões lógicas de premissas que levam a uma conclusão inescapável (Dedução ou Indução).</p>
+                    <div class="bg-slate-50 p-3 rounded text-xs text-slate-700 border-l-2 border-reduc-yellow">
+                        <strong>Exemplo:</strong> "Se a educação é o principal motor de mobilidade social, a precarização das escolas públicas atua sistematicamente para manter os ciclos de pobreza."
+                    </div>
+                </div>
+
+                <!-- Arg 8 -->
+                <div class="bg-white rounded-xl shadow-md border-t-4 border-reduc-blue p-6 card-hover">
+                    <div class="w-10 h-10 rounded-full bg-reduc-blue/10 flex items-center justify-center text-reduc-blue mb-4">
+                        <i class="ph-fill ph-books text-xl"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg mb-2 text-slate-800">8. Alusão Literária / Cultural</h3>
+                    <p class="text-sm text-slate-600 mb-4">Uso de obras de arte, romances, filmes ou séries para criar um paralelo analógico com o problema real.</p>
+                    <div class="bg-slate-50 p-3 rounded text-xs text-slate-700 border-l-2 border-reduc-yellow">
+                        <strong>Exemplo:</strong> "Assim como na obra 'Vidas Secas', de Graciliano Ramos, onde a família sofre pela seca climática, hoje muitos brasileiros enfrentam a 'seca' de oportunidades e descaso estatal."
+                    </div>
+                </div>
+
+                <!-- Arg 9 -->
+                <div class="bg-white rounded-xl shadow-md border-t-4 border-reduc-blue p-6 card-hover">
+                    <div class="w-10 h-10 rounded-full bg-reduc-blue/10 flex items-center justify-center text-reduc-blue mb-4">
+                        <i class="ph-fill ph-x-circle text-xl"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-lg mb-2 text-slate-800">9. Refutação (Contra-argumentação)</h3>
+                    <p class="text-sm text-slate-600 mb-4">Apresentar um argumento comum da sociedade (ou senso comum) para, em seguida, desconstruí-lo logicamente.</p>
+                    <div class="bg-slate-50 p-3 rounded text-xs text-slate-700 border-l-2 border-reduc-yellow">
+                        <strong>Exemplo:</strong> "Costuma-se afirmar que o sucesso depende exclusivamente do esforço individual (meritocracia). Contudo, essa visão ignora a desigualdade de ponto de partida imposta às minorias..."
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="conectivos" class="tab-content">
+            <div class="text-center mb-10 animate-slide-up">
+                <h1 class="text-4xl font-heading font-bold text-reduc-dark">O Poder da Coesão</h1>
+                <p class="text-slate-500 mt-3 text-lg">Os conectivos garantem os 200 pontos na Competência 4. Sem eles, seu texto não respira.</p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Categorias de Conectivos -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-reduc-dark text-white px-6 py-4">
+                            <h3 class="font-heading font-bold text-xl"><i class="ph-fill ph-plus-circle mr-2"></i> Adição & Continuidade</h3>
+                        </div>
+                        <div class="p-6 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm text-slate-700">
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Ademais,</div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Outrossim,</div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Somado a isso,</div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Além disso,</div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Sob esse viés,</div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Paralelo a isso,</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-reduc-blue text-white px-6 py-4">
+                            <h3 class="font-heading font-bold text-xl"><i class="ph-fill ph-arrows-left-right mr-2"></i> Oposição & Contraste (Ressalva)</h3>
+                        </div>
+                        <div class="p-6 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm text-slate-700">
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Entretanto,</div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Todavia,</div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Por outro lado,</div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Contudo,</div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Em contrapartida,</div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Não obstante,</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-reduc-darkYellow text-reduc-dark px-6 py-4">
+                            <h3 class="font-heading font-bold text-xl"><i class="ph-fill ph-flag-checkered mr-2"></i> Conclusão & Efeito</h3>
+                        </div>
+                        <div class="p-6 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm text-slate-700">
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Portanto,</div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Logo,</div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Por conseguinte,</div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Destarte,</div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Depreende-se, destarte,</div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-100">Em suma,</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cheat Sheet Lateral -->
+                <div class="bg-gradient-to-b from-reduc-dark to-reduc-blue rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 opacity-10">
+                        <i class="ph-fill ph-file-text text-[150px]"></i>
+                    </div>
+                    <h2 class="text-2xl font-heading font-bold text-reduc-yellow mb-6 flex items-center">
+                        <i class="ph-fill ph-fire mr-2"></i> Cheat Sheet: O Início Ideal
+                    </h2>
+                    <p class="text-sm font-light text-blue-100 mb-6">Mecânica pura: decore estas expressões para iniciar cada um dos seus parágrafos sem pestanejar na hora da prova.</p>
+                    
+                    <ul class="space-y-6 relative z-10">
+                        <li>
+                            <h4 class="text-reduc-yellow font-bold uppercase tracking-wider text-xs mb-2">Introdução (Ponte Pós-Repertório)</h4>
+                            <div class="bg-white/10 rounded-lg p-3 text-sm backdrop-blur-sm border border-white/20">
+                                "Sob essa ótica..." <br> "Fora da ficção..." <br> "De maneira análoga..."
+                            </div>
+                        </li>
+                        <li>
+                            <h4 class="text-reduc-yellow font-bold uppercase tracking-wider text-xs mb-2">Início do Desenvolvimento 1</h4>
+                            <div class="bg-white/10 rounded-lg p-3 text-sm backdrop-blur-sm border border-white/20">
+                                "Em primeiro lugar, cabe destacar..." <br> "Diante desse cenário, é crucial analisar..." <br> "Mormente, faz-se necessário pontuar..."
+                            </div>
+                        </li>
+                        <li>
+                            <h4 class="text-reduc-yellow font-bold uppercase tracking-wider text-xs mb-2">Início do Desenvolvimento 2</h4>
+                            <div class="bg-white/10 rounded-lg p-3 text-sm backdrop-blur-sm border border-white/20">
+                                "Ademais, é imperativo notar..." <br> "Outrossim, evidencia-se que..." <br> "Por outro lado, ressalta-se também..." (se for oposição)
+                            </div>
+                        </li>
+                        <li>
+                            <h4 class="text-reduc-yellow font-bold uppercase tracking-wider text-xs mb-2">Início da Conclusão</h4>
+                            <div class="bg-white/10 rounded-lg p-3 text-sm backdrop-blur-sm border border-white/20">
+                                "Portanto, medidas são necessárias para mitigar esse revés." <br> "Depreende-se, destarte, a urgência em resolver o impasse."
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="dicas" class="tab-content">
+            <div class="text-center mb-10 animate-slide-up">
+                <h1 class="text-4xl font-heading font-bold text-reduc-dark">Dicas de Ouro de Pâmela</h1>
+                <p class="text-slate-500 mt-3 text-lg">Estratégias de guerra para o dia da prova.</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto space-y-6">
+                <!-- Dica 1 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-reduc-yellow flex gap-4 items-start">
+                    <div class="bg-reduc-yellow/20 p-3 rounded-full text-reduc-dark">
+                        <i class="ph-fill ph-timer text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-heading font-bold text-lg text-slate-800">1. Gestão Rigorosa do Tempo</h3>
+                        <p class="text-slate-600 text-sm mt-1">
+                            Você não tem a tarde toda. Estabeleça um teto absoluto de <strong>1 hora e 15 minutos</strong> para a redação inteira (leitura, rascunho, revisão e folha definitiva). Treine em casa cronometrando.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Dica 2 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-reduc-dark flex gap-4 items-start">
+                    <div class="bg-reduc-dark/10 p-3 rounded-full text-reduc-dark">
+                        <i class="ph-fill ph-files text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-heading font-bold text-lg text-slate-800">2. Extraia o DNA dos Textos Motivadores</h3>
+                        <p class="text-slate-600 text-sm mt-1">
+                            Eles estão lá por um motivo. Leia-os atentamente para entender o "recorte temático" e não fugir do tema. <strong>Atenção:</strong> Jamais copie trechos inteiros, pois essas linhas serão ignoradas pela banca. Você pode usar os dados apresentados neles, mas deve usar <em>suas</em> próprias palavras e trazer um repertório externo para garantir a Competência 2 no máximo.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Dica 3 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-reduc-blue flex gap-4 items-start">
+                    <div class="bg-reduc-blue/10 p-3 rounded-full text-reduc-blue">
+                        <i class="ph-fill ph-pen-nib text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-heading font-bold text-lg text-slate-800">3. Rascunho Esquematizado (Projeto de Texto)</h3>
+                        <p class="text-slate-600 text-sm mt-1">
+                            Antes de escrever a primeira frase, faça o esqueleto: Qual será o tema central? Qual repertório na introdução? Quais os 2 argumentos? Qual será a proposta de intervenção (quem, o que, como, pra que)? Quem pula essa etapa corre enorme risco de travar no meio do texto e perder coerência.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Dica 4 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-red-500 flex gap-4 items-start">
+                    <div class="bg-red-50 p-3 rounded-full text-red-500">
+                        <i class="ph-fill ph-warning-circle text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-heading font-bold text-lg text-slate-800">4. Legibilidade e Rasuras</h3>
+                        <p class="text-slate-600 text-sm mt-1">
+                            A banca avalia milhares de textos. Se a sua letra for impossível de ler, o avaliador não vai tentar decifrar. Letra de forma é permitida, desde que você diferencie <strong>claramente</strong> maiúsculas e minúsculas. Errou uma palavra? Não faça rabiscos ou "bolinhas", apenas faça um traço horizontal simples no meio da palavra (ex: <del>palavra</del>) e escreva a correta logo à frente.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Dica 5 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-emerald-500 flex gap-4 items-start">
+                    <div class="bg-emerald-50 p-3 rounded-full text-emerald-500">
+                        <i class="ph-fill ph-check-circle text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-heading font-bold text-lg text-slate-800">5. A Temida Competência 1 (Gramática)</h3>
+                        <p class="text-slate-600 text-sm mt-1">
+                            Não invente vocabulário de época só para parecer culto. O ENEM prefere um texto claro, coeso e sem erros a um texto rebuscado cheio de deslizes de concordância. Revise o uso da vírgula (nunca separe sujeito de predicado) e da crase (regência).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 border-t-4 border-reduc-dark pt-12 pb-8 mt-12 text-center">
+        <div class="flex flex-col items-center justify-center opacity-80 hover:opacity-100 transition-opacity">
+            <img src="logo.png" alt="Reduc" class="h-8 w-auto mb-4 grayscale contrast-200" onerror="this.src='https://placehold.co/80x80/000000/FFFFFF?text=Reduc&font=Montserrat'">
+            <p class="text-slate-400 text-sm font-light tracking-wide">
+                © Reduc - Material exclusivo preparado por Pâmela. <br>
+                <span class="text-xs text-slate-500 mt-2 block">Educação acessível e estruturada para a nota máxima no ENEM.</span>
+            </p>
+        </div>
+    </footer>
+
+</div>
+
+<script>
+    // Função para simular o login e liberar a plataforma
+    function entrarNaPlataforma(event) {
+        event.preventDefault(); // Evita que a página recarregue ao enviar o formulário
+
+        // 1. Oculta a tela de login
+        document.getElementById('login-screen').style.display = 'none';
+
+        // 2. Mostra o conteúdo principal da plataforma Reduc
+        const conteudo = document.getElementById('conteudo-principal');
+        conteudo.style.display = 'block';
+
+        // 3. Adiciona a animação de fade-in para a transição
+        conteudo.classList.add('animate-fade-in');
+    }
+
+    // Função original de navegação das abas mantida
+    function switchTab(tabId) {
+        // Hide all contents
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(content => {
+            content.classList.remove('active');
+        });
+
+        // Reset all buttons style to inactive state
+        const buttons = document.querySelectorAll('.tab-btn');
+        buttons.forEach(btn => {
+            // Resetting to the default 'blue/20' state
+            btn.className = 'tab-btn whitespace-nowrap px-5 py-2.5 rounded-full font-heading font-semibold text-sm transition-all duration-300 bg-reduc-blue/20 text-white hover:bg-reduc-blue/40';
+        });
+
+        // Show active content
+        document.getElementById(tabId).classList.add('active');
+
+        // Set active button style (Yellow background, dark text, shadow)
+        const activeBtn = document.getElementById('tab-' + tabId);
+        activeBtn.className = 'tab-btn active whitespace-nowrap px-5 py-2.5 rounded-full font-heading font-semibold text-sm transition-all duration-300 bg-reduc-yellow text-reduc-dark shadow-md';
+    }
+</script>
